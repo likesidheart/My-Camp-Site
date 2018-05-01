@@ -7,7 +7,7 @@ app.set("view engine","ejs");
 
 //array hardcoded
 var campgrounds = [
-    {name: "Niagara", image:"https://www.taketours.com/images/logo/39087.jpg"},
+    {name: "Niagara", image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8q8jVVqBU45uv83Ut_Mrbfw3vjeqRYoDz7Hc7Jfbi8Sk1g1Am"},
     {name: "Blue Mountains", image:"https://smartcanucks.ca/wp-content/uploads/2016/11/blue-mountain-ontario-deals.jpg"},
     {name: "Point Pelee", image:"https://s3.amazonaws.com/btoimage/prism-thumbnails/articles/201846-point-pelee-park.jpg-resize_then_crop-_frame_bg_color_FFF-h_1365-gravity_center-q_70-preserve_ratio_true-w_2048_.jpg"}
 ];

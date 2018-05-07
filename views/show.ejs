@@ -1,0 +1,12 @@
+<% include partials/header %>
+
+<h1><%= campground.name %></h1>
+
+<img style="max-width: 500px; max-height: 500px;" src="<%= campground.image %>">
+
+<p><%= campground.description %></p>
+
+<% campground.comments.forEach(function(comment){ %>
+    <p><%= comment.author %> - <%= comment.text %> </p>
+<% }) %>
+<% include partials/footer %>

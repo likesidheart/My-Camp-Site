@@ -12,6 +12,9 @@ var Comment = require("./models/comment");
 
 seedDB();
 mongoose.connect("mongodb://localhost/my_camp_site");
+//linking the public diractory
+app.use(express.static(__dirname + "/public"));
+console.log(__dirname);
 
 app.use (bodyParser.urlencoded({extended: true}));
 app.set("view engine","ejs");
@@ -72,7 +75,7 @@ app.get("/campgrounds/:id", function(req, res){
 });
 
 //====================
-// COMMENTS ROUTES
+// COMMENTS ROUTES  //
 //====================
 
 app.get("/campgrounds/:id/comments/new", function(req,res){
@@ -108,5 +111,5 @@ app.post("/campgrounds/:id/comments", function(req, res){
 
 //listening port
 app.listen("3000", function () {
-    console.log("Server started : 3000")
+    console.log("Server started at localhost:3000");
 });

@@ -3,45 +3,28 @@ var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 
+// connecting the campground.js
+var Campground = require("./models/campground");
+// connecting the seeds.js
+var seedDB = require("./seeds");
+// connectiong comment.js
+var Comment = require("./models/comment");
+
+seedDB();
 mongoose.connect("mongodb://localhost/my_camp_site");
+//linking the public diractory
+app.use(express.static(__dirname + "/public"));
+console.log(__dirname);
 
 app.use (bodyParser.urlencoded({extended: true}));
 app.set("view engine","ejs");
-
-//Schema Setup
-var campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String
-});
-
-var Campground = mongoose.model("Campground", campgroundSchema);
-
-// Campground.create(
-//     {
-//         name: "Blue Mountains",
-//         image:"https://smartcanucks.ca/wp-content/uploads/2016/11/blue-mountain-ontario-deals.jpg"
-//     }, function(err, campgorund) {
-//         if(err) {
-//             console.log(err);
-//         } else {
-//             console.log("New Campground created");
-//             console.log(campgorund);
-//         }
-//     }
-// )
-
-//array hardcoded
-// var campgrounds = [
-//     {name: "Niagara", image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8q8jVVqBU45uv83Ut_Mrbfw3vjeqRYoDz7Hc7Jfbi8Sk1g1Am"},
-//     {name: "Blue Mountains", image:"https://smartcanucks.ca/wp-content/uploads/2016/11/blue-mountain-ontario-deals.jpg"},
-//     {name: "Point Pelee", image:"https://s3.amazonaws.com/btoimage/prism-thumbnails/articles/201846-point-pelee-park.jpg-resize_then_crop-_frame_bg_color_FFF-h_1365-gravity_center-q_70-preserve_ratio_true-w_2048_.jpg"}
-// ];
 
 //root
 app.get("/", function(req,res){
     res.render("landing");
 });
 
+//INDEX Route - show all campgrounds
 //campgrounds page
 app.get("/campgrounds", function(req,res){
     //Get all campgrounds from DB
@@ -49,17 +32,19 @@ app.get("/campgrounds", function(req,res){
         if(err) {
             console.log(err);
         } else {
-            res.render("campgrounds", {campgrounds: allCampgrounds});
+            res.render("campgrounds/index", {campgrounds: allCampgrounds});
         }
     });
 });
 
-//creates new campground
+
+//CREATE Route: creates new campground
 app.post("/campgrounds", function(req,res){
     //data from form and add to campgroung array
     var name = req.body.name;
     var image = req.body.image;
-    var  newCampground = {name: name, image: image}
+    var desc = req.body.description;
+    var  newCampground = {name: name, image: image, description: desc }
     // create a new campground and save to DB
     Campground.create(newCampground, function(err, newlyCreated){
         if(err) {
@@ -70,12 +55,61 @@ app.post("/campgrounds", function(req,res){
     });
 });
 
-//send form values to post method above
+//NEW Route: send form values to post method above
 app.get("/campgrounds/new", function(req,res){
-    res.render("new.ejs");
+    res.render("campgrounds/new");
+});
+
+//SHOW - shows detail of campgrounds
+app.get("/campgrounds/:id", function(req, res){
+    //find the campground with provided ID
+    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
+        if(err) {
+            console.log(err);
+        } else {
+            //console.log(foundCampground);
+            //reder show template with that campground
+            res.render("campgrounds/show", {campground: foundCampground});
+        }
+    });
+});
+
+//====================
+// COMMENTS ROUTES  //
+//====================
+
+app.get("/campgrounds/:id/comments/new", function(req,res){
+    //find by id
+    Campground.findById(req.params.id, function(err, campground){
+        if(err) {
+            console.log(err);
+        } else {
+            res.render("comments/new", {campground: campground});
+        }
+    });
+});
+
+app.post("/campgrounds/:id/comments", function(req, res){
+    //lookup cg with id
+    Campground.findById(req.params.id, function(err, campground){
+        if(err) {
+            console.log(err);
+            res.redirect("/campgrounds");
+        } else {
+            Comment.create(req.body.comment, function(err, comment){
+                if (err) {
+                    console.log(err);
+                } else {
+                    campground.comments.push(comment);
+                    campground.save();
+                    res.redirect('/campgrounds/' +  campground._id);
+                }
+            });
+        }
+    });
 });
 
 //listening port
 app.listen("3000", function () {
-    console.log("Server started")
+    console.log("Server started at localhost:3000");
 });

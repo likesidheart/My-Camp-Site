@@ -14,7 +14,7 @@ var data = [
         description: "Blue Mountain is an alpine ski resort in Ontario, Canada, just northwest of Collingwood. It is situated on a section of the Niagara Escarpment about 1 km from Nottawasaga Bay, and is a major destination for skiers from southern Ontario."
     },
     {
-        name: "Banf",
+        name: "Banff",
         image: "https://www.waterskimag.com/sites/waterskimag.com/files/styles/1000_1x_/public/import/embedded/files/2014/02/WSKFA13P_064-1-1024x772.jpg?itok=tuSrJ-6F",
         description: "Banff is a resort town in the province of Alberta, located within Banff National Park. The peaks of Mt. Rundle and Mt. Cascade, part of the Rocky Mountains, dominate its skyline. On Banff Avenue, the main thoroughfare, boutiques and restaurants mix with château-style hotels and souvenir shops"
     }

@@ -16,9 +16,8 @@ var Comment = require("./models/comment");
 var commentRoutes = require("./routes/comments"),
     campgroundRoutes = require("./routes/campgrounds"),
     indexRoutes = require("./routes/index");
-    
-
-seedDB();
+   
+// seedDB(); //seed the database
 mongoose.connect("mongodb://localhost/my_camp_site");
 //linking the public diractory
 app.use(express.static(__dirname + "/public"));

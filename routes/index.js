@@ -46,7 +46,6 @@ router.get("/logout", function (req, res) {
     req.logout();
     res.redirect("/login");
 }); 
-//middleware
 //problem solved: "/loggedin" route can access only if you are loggedin
 function isLoggedIn(req, res, next) {
     if(req.isAuthenticated()) {

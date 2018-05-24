@@ -2,112 +2,55 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
+var passportLocalMongoose = require("passport-local-mongoose");
+var User = require("./models/user");
 // connecting the campground.js
 var Campground = require("./models/campground");
 // connecting the seeds.js
 var seedDB = require("./seeds");
 // connectiong comment.js
 var Comment = require("./models/comment");
-
-seedDB();
+//connecting routes
+var commentRoutes = require("./routes/comments"),
+    campgroundRoutes = require("./routes/campgrounds"),
+    indexRoutes = require("./routes/index");
+   
+// seedDB(); //seed the database
 mongoose.connect("mongodb://localhost/my_camp_site");
 //linking the public diractory
 app.use(express.static(__dirname + "/public"));
-console.log(__dirname);
+// console.log(__dirname);
 
-app.use (bodyParser.urlencoded({extended: true}));
-app.set("view engine","ejs");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
 
-//root
-app.get("/", function(req,res){
-    res.render("landing");
+// PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "Node JS is Best!",
+    resave: false,
+    saveUninitialized: false
+}));
+//initializing passport
+app.use(passport.initialize());
+app.use(passport.session());
+//to read the sessions and encode + decode the data
+passport.use(new LocalStrategy(User.authenticate()));
+//encoding
+passport.serializeUser(User.serializeUser());
+//decoding
+passport.deserializeUser(User.deserializeUser());
+
+//middleware for current user so we can use it in every header
+app.use(function(req, res, next) {
+    res.locals.currentUser = req.user;
+    next();
 });
-
-//INDEX Route - show all campgrounds
-//campgrounds page
-app.get("/campgrounds", function(req,res){
-    //Get all campgrounds from DB
-    Campground.find({}, function(err, allCampgrounds){
-        if(err) {
-            console.log(err);
-        } else {
-            res.render("campgrounds/index", {campgrounds: allCampgrounds});
-        }
-    });
-});
-
-
-//CREATE Route: creates new campground
-app.post("/campgrounds", function(req,res){
-    //data from form and add to campgroung array
-    var name = req.body.name;
-    var image = req.body.image;
-    var desc = req.body.description;
-    var  newCampground = {name: name, image: image, description: desc }
-    // create a new campground and save to DB
-    Campground.create(newCampground, function(err, newlyCreated){
-        if(err) {
-            console.log(err);
-        } else {
-            res.redirect("/campgrounds");
-        }
-    });
-});
-
-//NEW Route: send form values to post method above
-app.get("/campgrounds/new", function(req,res){
-    res.render("campgrounds/new");
-});
-
-//SHOW - shows detail of campgrounds
-app.get("/campgrounds/:id", function(req, res){
-    //find the campground with provided ID
-    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
-        if(err) {
-            console.log(err);
-        } else {
-            //console.log(foundCampground);
-            //reder show template with that campground
-            res.render("campgrounds/show", {campground: foundCampground});
-        }
-    });
-});
-
-//====================
-// COMMENTS ROUTES  //
-//====================
-
-app.get("/campgrounds/:id/comments/new", function(req,res){
-    //find by id
-    Campground.findById(req.params.id, function(err, campground){
-        if(err) {
-            console.log(err);
-        } else {
-            res.render("comments/new", {campground: campground});
-        }
-    });
-});
-
-app.post("/campgrounds/:id/comments", function(req, res){
-    //lookup cg with id
-    Campground.findById(req.params.id, function(err, campground){
-        if(err) {
-            console.log(err);
-            res.redirect("/campgrounds");
-        } else {
-            Comment.create(req.body.comment, function(err, comment){
-                if (err) {
-                    console.log(err);
-                } else {
-                    campground.comments.push(comment);
-                    campground.save();
-                    res.redirect('/campgrounds/' +  campground._id);
-                }
-            });
-        }
-    });
-});
+//using the Routes
+app.use("/",indexRoutes);
+app.use("/campgrounds",campgroundRoutes);
+app.use("/campgrounds/:id/comments",commentRoutes);
 
 //listening port
 app.listen("3000", function () {

@@ -54,6 +54,42 @@ router.get("/:id", function (req, res) {
         }
     });
 });
+//Edit Campground Route
+router.get("/:id/edit", function(req, res){
+    // find the campground with provided ID
+     Campground.findById(req.params.id, function(err, foundCampground){
+         if(err) {
+             console.log(err);
+             res.redirect("/campgrounds");
+         } else {
+             //reder edit template with that campground
+             res.render("campgrounds/edit", {campground: foundCampground});
+         }
+     });
+ });
+//Update Campground Route
+router.put("/:id", function(req, res){
+    Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
+        if(err) {
+            console.log(err);
+            res.redirect("/campgrounds");
+        } else {
+            res.redirect("/campgrounds/" + req.params.id);
+        }
+    });
+});
+//Delete Campground Route
+router.delete("/:id", function(req, res){
+    //delete campground
+   Campground.findByIdAndRemove(req.params.id, function(err){
+       if(err) {
+           console.log(err);
+           res.redirect("/campgrounds");
+       } else {
+           res.redirect("/campgrounds");
+       }
+   });
+});
 //problem solved: "/campgrounds" route can access only if you are loggedin
 function isLoggedIn(req, res, next) {
     if(req.isAuthenticated()) {

@@ -7,6 +7,7 @@ var LocalStrategy = require("passport-local");
 var passportLocalMongoose = require("passport-local-mongoose");
 var User = require("./models/user");
 var methodOverride = require("method-override");
+var flash = require("connect-flash");
 // connecting the campground.js
 var Campground = require("./models/campground");
 // connecting the seeds.js
@@ -23,7 +24,7 @@ mongoose.connect("mongodb://localhost/my_camp_site");
 //linking the public diractory
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
-
+app.use(flash());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 

@@ -28,7 +28,7 @@ router.post("/register", function (req, res) {
 });
 //show Log in form
 router.get("/login", function (req, res) {
-    res.render("login",{message:req.flash("error")});
+    res.render("login");
 });
 //login logic
 //app.post("/login", middleware, callback)
@@ -44,7 +44,8 @@ router.post("/login", passport.authenticate("local", {
 //logout route
 router.get("/logout", function (req, res) {
     req.logout();
-    res.redirect("/login");
+    req.flash("success", "Logged out Successfully!");
+    res.redirect("/campgrounds");
 }); 
 //problem solved: "/loggedin" route can access only if you are loggedin
 function isLoggedIn(req, res, next) {

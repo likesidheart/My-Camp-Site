@@ -47,6 +47,8 @@ passport.deserializeUser(User.deserializeUser());
 //middleware for current user so we can use it in every header
 app.use(function(req, res, next) {
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error"); // to define globally 
+    res.locals.success = req.flash("success"); // to define globally 
     next();
 });
 //using the Routes

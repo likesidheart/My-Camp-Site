@@ -73,7 +73,7 @@ router.put("/:id", checkCampgroundOwnership, function (req, res) {
     });
 });
 //Delete Campground Route
-router.delete("/:id", checkCampgroundOwnership, function (req, res) {
+router.delete("/:id",checkCampgroundOwnership, function (req, res) {
     //delete campground
     Campground.findByIdAndRemove(req.params.id, function (err) {
         if (err) {
@@ -103,14 +103,14 @@ function checkCampgroundOwnership(req, res, next) {
                 //does the  user own the campground? "check the id of loggedin user and user who created the campground"
                 if (foundCampground.author.id.equals(req.user._id)) {
                     //reder edit template with that campground
-                    return next();
+                    return next(); 
                 } else {
                     res.redirect("back");
                 }
             }
         });
     } else { //redirect to login
-        res.redirect("/back");
+        res.redirect("back");
     }
 }
 
